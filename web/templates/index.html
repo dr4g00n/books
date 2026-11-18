@@ -36,17 +36,17 @@
       <span class="muted">{{ stats.category_count }} 个分类</span>
     </div>
     {% if stats.by_category %}
+    {% set max_count = stats.by_category.values() | max %}
     <ul class="bar-list">
       {% for cat, count in stats.by_category.items() %}
-      {% set pct = (count / stats.total * 100) | round %}
       <li>
         <div class="bar-row">
           <a href="/library?category={{ cat | urlencode }}">{{ cat }}</a>
-          <span class="bar-meta"><b>{{ count }}</b> 本 · {{ pct }}%</span>
+          <span class="bar-meta"><b>{{ count }}</b> 本 · {{ (count / stats.total * 100) | round | int }}%</span>
         </div>
         <div class="bar-track">
           <div class="bar {{ 'bar-top' if loop.first }}"
-               style="--w: {{ pct }}%"></div>
+               style="--w: {{ (count / max_count * 100) | round | int }}%"></div>
         </div>
       </li>
       {% endfor %}

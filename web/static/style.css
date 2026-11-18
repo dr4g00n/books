@@ -141,7 +141,13 @@ h2 { font-size: 1rem; font-weight: 600; color: var(--text); }
   display: flex; justify-content: space-between; align-items: center;
   color: var(--text-muted); font-size: 0.85rem;
 }
-.stat-icon { opacity: 0.6; font-size: 0.95rem; }
+.stat-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.85rem; opacity: 0.85;
+}
 .stat-num {
   font-size: 2rem; font-weight: 700; line-height: 1.25;
   margin-top: 0.35rem;

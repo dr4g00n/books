@@ -32,6 +32,17 @@ templates = Jinja2Templates(directory=WEB_DIR / "templates")
 templates.env.globals["status_labels"] = services.STATUS_LABELS
 
 
+def _static_version() -> int:
+    """静态资源版本号：取 CSS/JS 最新 mtime，文件变更后浏览器自动弃用旧缓存。"""
+    return int(max(
+        (WEB_DIR / "static" / f).stat().st_mtime
+        for f in ("style.css", "app.js")
+    ))
+
+
+templates.env.globals["v"] = _static_version()
+
+
 @app.get("/", response_class=HTMLResponse)
 def dashboard(request: Request):
     return templates.TemplateResponse(
