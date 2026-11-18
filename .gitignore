@@ -10,8 +10,9 @@ __pycache__/
 # 下载的第三方压缩包
 AgentSwarm/
 
-# 索引数据库（可由 books index 重建）
+# 索引数据库（可由 books index 重建）与封面缓存（可再生成）
 .metadata/*.db
+.metadata/covers/
 
 # 书库内容与暂存区（二进制大文件与派生笔记，不纳入版本控制）
 library/

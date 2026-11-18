@@ -1,51 +1,82 @@
 {% extends "base.html" %}
 {% block title %}仪表盘 · Books Web{% endblock %}
 {% block content %}
-<h1>仪表盘</h1>
+<header class="page-header">
+  <h1>仪表盘</h1>
+  <p class="muted">共 {{ stats.total }} 本藏书，合计 {{ stats.total_size_mb }} MB</p>
+</header>
 
 <div class="stat-cards">
   <div class="stat-card">
-    <div class="stat-num">{{ stats.total }}</div>
-    <div class="stat-label">藏书总数</div>
+    <div class="stat-head"><span>藏书总数</span><span class="stat-icon">📚</span></div>
+    <div class="stat-num">{{ stats.total }}<small>本</small></div>
+    <div class="stat-sub">全部已整理入库</div>
   </div>
   <div class="stat-card">
-    <div class="stat-num">{{ stats.total_size_mb }}</div>
-    <div class="stat-label">总大小 (MB)</div>
+    <div class="stat-head"><span>未读</span><span class="stat-icon">🔖</span></div>
+    <div class="stat-num">{{ stats.unread }}<small>本</small></div>
+    <div class="stat-sub">占藏书总数 {{ stats.unread_pct }}%</div>
   </div>
-  {% for label, count in stats.by_status.items() %}
   <div class="stat-card">
-    <div class="stat-num">{{ count }}</div>
-    <div class="stat-label">{{ label }}</div>
+    <div class="stat-head"><span>总大小</span><span class="stat-icon">🗄</span></div>
+    <div class="stat-num">{{ stats.total_size_mb }}<small>MB</small></div>
+    <div class="stat-sub">平均每本 {{ stats.avg_size_mb }} MB</div>
   </div>
-  {% endfor %}
+  <div class="stat-card">
+    <div class="stat-head"><span>分类数量</span><span class="stat-icon">🗂</span></div>
+    <div class="stat-num">{{ stats.category_count }}<small>个</small></div>
+    <div class="stat-sub">按编号与主题归类</div>
+  </div>
 </div>
 
 <div class="dashboard-grid">
   <section class="panel">
-    <h2>分类分布</h2>
+    <div class="panel-head">
+      <h2>分类分布</h2>
+      <span class="muted">{{ stats.category_count }} 个分类</span>
+    </div>
     {% if stats.by_category %}
     <ul class="bar-list">
       {% for cat, count in stats.by_category.items() %}
+      {% set pct = (count / stats.total * 100) | round %}
       <li>
-        <a href="/library?category={{ cat | urlencode }}">{{ cat }}</a>
-        <span class="bar" style="--w: {{ (count / stats.total * 100) | round(1) }}%"></span>
-        <span class="bar-count">{{ count }}</span>
+        <div class="bar-row">
+          <a href="/library?category={{ cat | urlencode }}">{{ cat }}</a>
+          <span class="bar-meta"><b>{{ count }}</b> 本 · {{ pct }}%</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar {{ 'bar-top' if loop.first }}"
+               style="--w: {{ pct }}%"></div>
+        </div>
       </li>
       {% endfor %}
     </ul>
+    {% if stats.insight %}
+    <p class="insight">● {{ stats.insight }}</p>
+    {% endif %}
     {% else %}<p class="muted">暂无数据</p>{% endif %}
   </section>
 
   <section class="panel">
-    <h2>最近添加</h2>
-    <ul class="book-list">
+    <div class="panel-head">
+      <h2>最近添加</h2>
+      <a href="/library?sort=added" class="more-link">查看全部 →</a>
+    </div>
+    <ul class="recent-list">
       {% for b in stats.recent %}
       <li>
-        <a href="/books/{{ b.id }}">{{ b.title }}</a>
-        <span class="badge status-{{ b.status }}">{{ b.status_label }}</span>
+        <a class="recent-item" href="/books/{{ b.id }}">
+          <div class="cover cover-sm">
+            <img src="/api/v1/books/{{ b.id }}/cover" loading="lazy"
+                 onerror="this.remove()">
+            <div class="cover-fallback">{{ b.title[:6] }}</div>
+          </div>
+          <span class="recent-title">{{ b.title }}</span>
+          <span class="badge status-{{ b.status }}">{{ b.status_label }}</span>
+        </a>
       </li>
       {% else %}
-      <li class="muted">暂无书籍，点击右上角「重建索引」扫描书库</li>
+      <li class="muted">暂无书籍，点右上角「上传」添加第一本</li>
       {% endfor %}
     </ul>
   </section>

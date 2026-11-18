@@ -84,6 +84,18 @@ def get_file(book_id: int, download: bool = False):
     )
 
 
+@router.get("/books/{book_id}/cover")
+def get_cover(book_id: int):
+    """书籍封面缩略图（PDF 首页渲染，带缓存）；无封面时 404，前端用占位图。"""
+    book = services.get_book(book_id)
+    if not book:
+        raise HTTPException(404, "书籍不存在")
+    path = services.get_cover(book)
+    if not path:
+        raise HTTPException(404, "无封面")
+    return FileResponse(path)
+
+
 @router.get("/books/{book_id}/notes")
 def get_notes(book_id: int):
     book = services.get_book(book_id)

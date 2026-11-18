@@ -19,6 +19,7 @@ uvicorn[standard]>=0.30.0
 jinja2>=3.1.0
 python-multipart>=0.0.9
 markdown>=3.6
+PyMuPDF>=1.24.0  # 封面缩略图提取
 
 # （可选）更强大的 PDF 解析
 # pdfplumber>=0.10.0

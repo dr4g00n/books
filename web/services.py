@@ -15,6 +15,7 @@ DB_PATH = BASE_DIR / ".metadata" / "library.db"
 CONFIG_PATH = BASE_DIR / ".config.yaml"
 CLI_ENTRY = BASE_DIR / ".scripts" / "books.py"
 VENV_PYTHON = BASE_DIR / "venv" / "bin" / "python3"
+COVERS_DIR = BASE_DIR / ".metadata" / "covers"
 
 ALLOWED_STATUSES = ("unread", "reading", "finished", "reference")
 STATUS_LABELS = {
@@ -185,14 +186,53 @@ def get_stats() -> dict:
         recent = conn.execute(
             "SELECT * FROM books ORDER BY added_at DESC LIMIT 5"
         ).fetchall()
-    return {
+
+    total_size_mb = round(total_size / 1024 / 1024, 1)
+    unread = by_status.get("unread", 0)
+    result = {
         "total": total,
-        "total_size_mb": round(total_size / 1024 / 1024, 1),
+        "total_size_mb": total_size_mb,
+        "avg_size_mb": round(total_size_mb / total, 1) if total else 0,
+        "unread": unread,
+        "unread_pct": round(unread / total * 100) if total else 0,
+        "category_count": len(by_category),
         "by_status": {STATUS_LABELS.get(k, k): v for k, v in by_status.items()},
         "by_category": by_category,
         "by_rating": {f"{k} 星": v for k, v in sorted(by_rating.items())},
         "recent": [_row_to_book(r) for r in recent],
+        "insight": "",
     }
+    if by_category and total:
+        top_cat, top_count = next(iter(by_category.items()))
+        pct = round(top_count / total * 100)
+        short = top_cat.split("-", 1)[-1]
+        result["insight"] = f"{short}类藏书最多，占全部藏书 {pct}%"
+    return result
+
+
+def get_cover(book: dict) -> Path | None:
+    """生成并返回书籍封面缩略图（PDF 首页渲染，按源文件 mtime 缓存）。
+
+    非 PDF 或渲染失败返回 None，由前端展示占位封面。
+    """
+    src = resolve_file(book)
+    if not src or src.suffix.lower() != ".pdf":
+        return None
+    COVERS_DIR.mkdir(parents=True, exist_ok=True)
+    cover = COVERS_DIR / f"{book['id']}.png"
+    if cover.exists() and cover.stat().st_mtime >= src.stat().st_mtime:
+        return cover
+    try:
+        import pymupdf
+
+        with pymupdf.open(src) as doc:
+            page = doc[0]
+            zoom = 300 / page.rect.width
+            pix = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom))
+            pix.save(cover)
+        return cover
+    except Exception:
+        return None
 
 
 def resolve_file(book: dict) -> Path | None:

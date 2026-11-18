@@ -7,20 +7,46 @@
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <nav class="topnav">
-    <a class="brand" href="/">📚 Books Web</a>
-    <a href="/" class="{{ 'active' if page == 'dashboard' }}">仪表盘</a>
-    <a href="/library" class="{{ 'active' if page == 'library' }}">书库</a>
-    <div class="nav-actions">
-      <button id="btn-upload" class="btn btn-ghost" title="上传到 swap 暂存区">⬆ 上传</button>
-      <button id="btn-organize" class="btn btn-ghost" title="把 swap 暂存区的书籍整理进书库">⇪ 整理入库</button>
-      <button id="btn-reindex" class="btn btn-ghost" title="重新扫描目录建立索引">⟳ 重建索引</button>
-      <a href="/docs" class="btn btn-ghost" target="_blank" title="REST API 文档">API</a>
+  <div class="layout">
+    <aside class="sidebar">
+      <a class="brand" href="/">📚 Books Web</a>
+      <nav class="nav">
+        <a href="/" class="nav-item {{ 'active' if page == 'dashboard' }}">
+          <span class="nav-icon">◈</span> 仪表盘
+        </a>
+        <a href="/library" class="nav-item {{ 'active' if page == 'library' }}">
+          <span class="nav-icon">📖</span> 书库
+        </a>
+      </nav>
+      <div class="nav-section">工具</div>
+      <nav class="nav">
+        <button id="btn-organize" class="nav-item">
+          <span class="nav-icon">⇪</span> 整理入库
+        </button>
+        <button id="btn-reindex" class="nav-item">
+          <span class="nav-icon">⟳</span> 重建索引
+        </button>
+      </nav>
+      <a href="/docs" class="nav-item nav-bottom" target="_blank">
+        <span class="nav-icon">&lt;/&gt;</span> API
+      </a>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <form class="global-search" action="/library" method="get">
+          <span class="search-icon">⌕</span>
+          <input type="search" name="keyword" placeholder="搜索书名、作者或分类"
+                 value="{{ keyword or '' }}">
+        </form>
+        <button id="btn-upload" class="btn btn-primary">⬆ 上传</button>
+      </header>
+      <main class="content">
+        {% block content %}{% endblock %}
+      </main>
     </div>
-  </nav>
-  <main class="container">
-    {% block content %}{% endblock %}
-  </main>
+  </div>
+
   <input type="file" id="upload-input" hidden
          accept=".pdf,.epub,.mobi,.djvu,.pptx,.ppt">
   <div id="toast" class="toast" hidden></div>

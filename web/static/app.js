@@ -86,8 +86,10 @@ const PAGE_SIZE = 24;
 let pageState = { offset: 0, total: 0 };
 
 function readFilters() {
+  // 关键词来自顶栏全局搜索框（URL 参数带回）
+  const kw = document.querySelector(".global-search input");
   return {
-    keyword: document.getElementById("f-keyword").value.trim(),
+    keyword: kw ? kw.value.trim() : "",
     category: document.getElementById("f-category").value,
     status: document.getElementById("f-status").value,
     tag: document.getElementById("f-tag").value,
@@ -98,19 +100,20 @@ function readFilters() {
 
 function bookCard(b) {
   const stars = b.rating > 0 ? "★".repeat(b.rating) : "";
-  const tags = (b.tags || [])
-    .map((t) => `<span class="tag">${esc(t)}</span>`)
-    .join("");
   return `
-    <div class="book-card">
-      <a class="title" href="/books/${b.id}">${esc(b.title)}</a>
+    <a class="book-card" href="/books/${b.id}">
+      <div class="cover">
+        <img src="/api/v1/books/${b.id}/cover" loading="lazy"
+             onerror="this.remove()">
+        <div class="cover-fallback">${esc(b.title.slice(0, 10))}</div>
+      </div>
+      <div class="title">${esc(b.title)}</div>
       <div class="meta">${esc(b.author || "佚名")} · ${esc(b.category)} · ${b.size_mb} MB</div>
-      <div class="tags">${tags}</div>
       <div class="foot">
         <span class="rating">${stars}</span>
         <span class="badge status-${b.status}">${esc(b.status_label)}</span>
       </div>
-    </div>`;
+    </a>`;
 }
 
 async function loadBooks() {
@@ -138,14 +141,14 @@ async function loadBooks() {
 }
 
 function initLibrary() {
-  // 从 URL 恢复筛选（如从仪表盘分类链接进来）
+  // 从 URL 恢复筛选（如从仪表盘分类链接或全局搜索进来）
   const params = new URLSearchParams(location.search);
   if (params.get("category"))
     document.getElementById("f-category").value = params.get("category");
   if (params.get("status"))
     document.getElementById("f-status").value = params.get("status");
-  if (params.get("keyword"))
-    document.getElementById("f-keyword").value = params.get("keyword");
+  if (params.get("sort"))
+    document.getElementById("f-sort").value = params.get("sort");
 
   let debounce;
   const reload = () => {
@@ -153,8 +156,15 @@ function initLibrary() {
     clearTimeout(debounce);
     debounce = setTimeout(() => loadBooks().catch((e) => toast(e.message, true)), 200);
   };
-  document.querySelectorAll(".filter-bar input, .filter-bar select")
+  document.querySelectorAll(".filter-bar select")
     .forEach((el) => el.addEventListener("input", reload));
+
+  // 顶栏搜索框即时过滤（不回车也生效）
+  const kwInput = document.querySelector(".global-search input");
+  if (kwInput) {
+    kwInput.addEventListener("input", reload);
+    kwInput.closest("form").addEventListener("submit", (e) => e.preventDefault());
+  }
 
   document.getElementById("btn-prev").addEventListener("click", () => {
     pageState.offset = Math.max(0, pageState.offset - PAGE_SIZE);

@@ -15,7 +15,13 @@
 
 <div class="detail-grid">
   <section class="panel">
-    <h2>元数据</h2>
+    <div class="detail-book-head">
+      <div class="cover cover-md">
+        <img src="/api/v1/books/{{ book.id }}/cover" onerror="this.remove()">
+        <div class="cover-fallback">{{ book.title[:6] }}</div>
+      </div>
+      <h2>元数据</h2>
+    </div>
     <form id="edit-form" data-book-id="{{ book.id }}">
       <label>书名 <input name="title" value="{{ book.title }}"></label>
       <label>作者 <input name="author" value="{{ book.author or '' }}"></label>

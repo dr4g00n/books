@@ -1,10 +1,12 @@
 {% extends "base.html" %}
 {% block title %}书库 · Books Web{% endblock %}
 {% block content %}
-<h1>书库</h1>
+<header class="page-header">
+  <h1>书库</h1>
+  <p class="muted" id="result-meta"></p>
+</header>
 
 <div class="filter-bar">
-  <input type="search" id="f-keyword" placeholder="搜索书名 / 作者 / 笔记…" value="">
   <select id="f-category">
     <option value="">全部分类</option>
     {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
@@ -34,7 +36,6 @@
   </select>
 </div>
 
-<div id="result-meta" class="muted"></div>
 <div id="book-grid" class="book-grid"></div>
 <div class="pagination">
   <button id="btn-prev" class="btn" disabled>上一页</button>
