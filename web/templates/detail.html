@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ book.title }} · Books Web{% endblock %}
+{% block content %}
+<div class="detail-header">
+  <a href="/library" class="muted">← 返回书库</a>
+  <div class="detail-actions">
+    <a class="btn" href="/api/v1/books/{{ book.id }}/file" target="_blank">📖 阅读</a>
+    <a class="btn" href="/api/v1/books/{{ book.id }}/file?download=true">⬇ 下载</a>
+    <button class="btn btn-danger" id="btn-delete">删除记录</button>
+  </div>
+</div>
+
+<h1>{{ book.title }}</h1>
+<p class="muted">{{ book.filepath }} · {{ book.size_mb }} MB{% if book.pages %} · {{ book.pages }} 页{% endif %}</p>
+
+<div class="detail-grid">
+  <section class="panel">
+    <h2>元数据</h2>
+    <form id="edit-form" data-book-id="{{ book.id }}">
+      <label>书名 <input name="title" value="{{ book.title }}"></label>
+      <label>作者 <input name="author" value="{{ book.author or '' }}"></label>
+      <label>ISBN <input name="isbn" value="{{ book.isbn or '' }}"></label>
+      <label>分类
+        <select name="category">
+          {% for c in categories %}
+          <option value="{{ c }}" {{ 'selected' if c == book.category }}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>状态
+        <select name="status">
+          {% for key, label in status_labels.items() %}
+          <option value="{{ key }}" {{ 'selected' if key == book.status }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>评分
+        <select name="rating">
+          {% for r in range(0, 6) %}
+          <option value="{{ r }}" {{ 'selected' if r == book.rating }}>{{ '未评分' if r == 0 else '★' * r }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>标签（逗号分隔）
+        <input name="tags" value="{{ book.tags | join(', ') }}">
+      </label>
+      <label>笔记
+        <textarea name="notes" rows="5">{{ book.notes or '' }}</textarea>
+      </label>
+      <button type="submit" class="btn btn-primary">保存</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>伴生笔记</h2>
+    <div id="notes-view" class="markdown-body" data-book-id="{{ book.id }}">
+      <p class="muted">加载中…</p>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>initDetail();</script>
+{% endblock %}

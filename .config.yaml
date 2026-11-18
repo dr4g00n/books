@@ -1,0 +1,213 @@
+# 书籍查询系统配置文件
+
+# 扁平化存储配置
+library_dir: library
+metadata_suffix: .pdf.md
+global_tags:
+  - "#书籍"
+
+database:
+  path: .metadata/library.db
+
+directories:
+  base_path: books
+  ignore_patterns:
+    - ".scripts"
+    - ".metadata"
+    - ".git"
+    - "venv"
+  file_extensions:
+    - ".pdf"
+    - ".epub"
+    - ".mobi"
+    - ".djvu"
+    - ".pptx"
+    - ".ppt"
+
+# 智能分类关键词规则
+category_keywords:
+  "88-开发技术":
+    - rust
+    - python
+    - java
+    - golang
+    - go
+    - javascript
+    - typescript
+    - 编程
+    - 开发
+    - 代码
+    - 程序
+    - 软件
+    - 算法
+    - 数据结构
+    - solana
+    - raydium
+    - clmm
+    - amm
+
+  "01-网络安全":
+    - 网络安全
+    - 网络攻击
+    - 网络防御
+    - 防火墙
+    - 入侵检测
+    - kali
+    - metasploit
+    - nmap
+    - burp
+    - wireshark
+
+  "02-Web安全":
+    - web安全
+    - xss
+    - sql注入
+    - csrf
+    - web渗透
+    - web pentest
+    - web hack
+    - http安全
+
+  "03-二进制安全":
+    - 二进制
+    - 逆向
+    - reverse
+    - exploit
+    - shellcode
+    - 缓冲区溢出
+    - heap
+    - stack
+
+  "04-移动安全":
+    - 安卓
+    - android
+    - ios
+    - 移动
+    - app
+    - apk
+    - ipa
+    - 移动安全
+
+  "05-安全开发":
+    - 安全开发
+    - devsecops
+    - 安全编码
+    - 代码审计
+    - SDL
+    - 安全开发生命周期
+
+  "06-安全运营":
+    - 安全运营
+    - SOC
+    - SIEM
+    - 日志分析
+    - 威胁情报
+    - 应急响应
+    - 安全监控
+
+  "07-密码学":
+    - 密码学
+    - 加密
+    - 解密
+    - crypto
+    - cipher
+    - 公钥
+    - 私钥
+    - 数字签名
+
+  "08-合规与审计":
+    - 合规
+    - 审计
+    - 等保
+    - ISO
+    - GDPR
+    - 数据保护
+    - 隐私
+
+  "09-红蓝对抗":
+    - 红队
+    - 蓝队
+    - red team
+    - blue team
+    - APT
+    - 渗透测试
+    - 攻防
+
+  "10-恶意软件分析":
+    - 恶意软件
+    - 病毒
+    - 木马
+    - malware
+    - 病毒分析
+    - 逆向工程
+
+  "11-云安全":
+    - 云安全
+    - aws
+    - azure
+    - 阿里云
+    - 腾讯云
+    - 容器安全
+    - kubernetes
+    - docker
+
+  "12-人工智能安全":
+    - ai
+    - 人工智能
+    - 机器学习
+    - 深度学习
+    - neural
+    - 模型安全
+    - 对抗样本
+    - 智能安全
+
+  "99-参考资料":
+    - 售前
+    - 产品
+    - 规格书
+    - 增长黑客
+    - 参考资料
+    - 文档
+    - 手册
+    - 指南
+    - 教程
+    - 白皮书
+    - 案例
+
+  "13-区块链安全":
+    - 区块链
+    - blockchain
+    - bitcoin
+    - btc
+    - 以太坊
+    - ethereum
+    - 智能合约
+    - solidity
+    - defi
+    - nft
+
+# 默认分类（当没有匹配关键词时使用）
+default_category: "99-参考资料"
+
+metadata:
+  default_status: unread
+  allowed_statuses:
+    - unread      # 未阅读
+    - reading     # 阅读中
+    - finished    # 已读完
+    - reference   # 参考书
+  allowed_ratings:
+    min: 1
+    max: 5
+
+display:
+  table_format: pretty  # pretty | simple | grid
+  max_results: 50
+  show_path: true
+  show_size: true
+
+viewer:
+  # 默认 PDF 阅读器
+  pdf_command: open  # macOS
+  # pdf_command: xdg-open  # Linux
+  # pdf_command: start  # Windows

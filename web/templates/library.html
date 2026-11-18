@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}书库 · Books Web{% endblock %}
+{% block content %}
+<h1>书库</h1>
+
+<div class="filter-bar">
+  <input type="search" id="f-keyword" placeholder="搜索书名 / 作者 / 笔记…" value="">
+  <select id="f-category">
+    <option value="">全部分类</option>
+    {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+  </select>
+  <select id="f-status">
+    <option value="">全部状态</option>
+    {% for key, label in status_labels.items() %}
+    <option value="{{ key }}">{{ label }}</option>
+    {% endfor %}
+  </select>
+  <select id="f-tag">
+    <option value="">全部标签</option>
+    {% for t in tags %}<option value="{{ t.name }}">{{ t.name }} ({{ t.count }})</option>{% endfor %}
+  </select>
+  <select id="f-rating">
+    <option value="0">全部评分</option>
+    <option value="4">≥ 4 星</option>
+    <option value="3">≥ 3 星</option>
+    <option value="2">≥ 2 星</option>
+    <option value="1">≥ 1 星</option>
+  </select>
+  <select id="f-sort">
+    <option value="updated">最近更新</option>
+    <option value="added">最近添加</option>
+    <option value="rating">评分最高</option>
+    <option value="title">书名排序</option>
+  </select>
+</div>
+
+<div id="result-meta" class="muted"></div>
+<div id="book-grid" class="book-grid"></div>
+<div class="pagination">
+  <button id="btn-prev" class="btn" disabled>上一页</button>
+  <span id="page-info"></span>
+  <button id="btn-next" class="btn" disabled>下一页</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>initLibrary();</script>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Books Web{% endblock %}</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <nav class="topnav">
+    <a class="brand" href="/">📚 Books Web</a>
+    <a href="/" class="{{ 'active' if page == 'dashboard' }}">仪表盘</a>
+    <a href="/library" class="{{ 'active' if page == 'library' }}">书库</a>
+    <div class="nav-actions">
+      <button id="btn-upload" class="btn btn-ghost" title="上传到 swap 目录">⬆ 上传</button>
+      <button id="btn-reindex" class="btn btn-ghost" title="重新扫描目录建立索引">⟳ 重建索引</button>
+      <a href="/docs" class="btn btn-ghost" target="_blank" title="REST API 文档">API</a>
+    </div>
+  </nav>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <input type="file" id="upload-input" hidden
+         accept=".pdf,.epub,.mobi,.djvu,.pptx,.ppt">
+  <div id="toast" class="toast" hidden></div>
+  <script src="/static/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

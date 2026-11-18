@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}仪表盘 · Books Web{% endblock %}
+{% block content %}
+<h1>仪表盘</h1>
+
+<div class="stat-cards">
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.total }}</div>
+    <div class="stat-label">藏书总数</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num">{{ stats.total_size_mb }}</div>
+    <div class="stat-label">总大小 (MB)</div>
+  </div>
+  {% for label, count in stats.by_status.items() %}
+  <div class="stat-card">
+    <div class="stat-num">{{ count }}</div>
+    <div class="stat-label">{{ label }}</div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="dashboard-grid">
+  <section class="panel">
+    <h2>分类分布</h2>
+    {% if stats.by_category %}
+    <ul class="bar-list">
+      {% for cat, count in stats.by_category.items() %}
+      <li>
+        <a href="/library?category={{ cat | urlencode }}">{{ cat }}</a>
+        <span class="bar" style="--w: {{ (count / stats.total * 100) | round(1) }}%"></span>
+        <span class="bar-count">{{ count }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}<p class="muted">暂无数据</p>{% endif %}
+  </section>
+
+  <section class="panel">
+    <h2>最近添加</h2>
+    <ul class="book-list">
+      {% for b in stats.recent %}
+      <li>
+        <a href="/books/{{ b.id }}">{{ b.title }}</a>
+        <span class="badge status-{{ b.status }}">{{ b.status_label }}</span>
+      </li>
+      {% else %}
+      <li class="muted">暂无书籍，点击右上角「重建索引」扫描书库</li>
+      {% endfor %}
+    </ul>
+  </section>
+</div>
+{% endblock %}
