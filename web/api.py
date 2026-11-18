@@ -118,7 +118,8 @@ def reindex():
 
 @router.post("/organize")
 def organize():
-    return services.run_cli("organize")
+    """把 swap/ 暂存区的书籍整理进 library/（自动分类）。"""
+    return services.run_cli("organize", confirm=True)
 
 
 @router.post("/upload")

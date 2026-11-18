@@ -16,6 +16,7 @@ directories:
     - ".metadata"
     - ".git"
     - "venv"
+    - "swap"      # 暂存/上传区，整理(organize)后才进入书库
   file_extensions:
     - ".pdf"
     - ".epub"

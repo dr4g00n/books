@@ -217,11 +217,15 @@ def read_notes(book: dict) -> str | None:
     return None
 
 
-def run_cli(*args: str) -> dict:
-    """复用 CLI 的重操作（index / organize），非交互调用。"""
+def run_cli(*args: str, confirm: bool = False) -> dict:
+    """复用 CLI 的重操作（index / organize），非交互调用。
+
+    confirm=True 时向 stdin 写入 "y"，用于跳过 organize 等命令的确认提示。
+    """
     cmd = [str(VENV_PYTHON), str(CLI_ENTRY), *args]
     proc = subprocess.run(
-        cmd, cwd=BASE_DIR, capture_output=True, text=True, timeout=600
+        cmd, cwd=BASE_DIR, capture_output=True, text=True, timeout=600,
+        input="y\n" if confirm else None,
     )
     return {
         "ok": proc.returncode == 0,

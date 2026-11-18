@@ -38,7 +38,9 @@ def index(force):
     indexer = Indexer(
         base_path=str(base_path),
         ignore_patterns=config.get("directories", {}).get("ignore_patterns", []),
-        file_extensions=config.get("directories", {}).get("file_extensions", [])
+        file_extensions=config.get("directories", {}).get("file_extensions", []),
+        library_dir=config.get("library_dir", "library"),
+        default_category=config.get("default_category", "99-参考资料")
     )
 
     click.echo("正在扫描目录...")

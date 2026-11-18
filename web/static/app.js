@@ -43,11 +43,26 @@ document.getElementById("upload-input").addEventListener("change", async (e) => 
   try {
     const resp = await fetch(API + "/upload", { method: "POST", body: fd });
     if (!resp.ok) throw new Error((await resp.json()).detail || "上传失败");
-    toast(`已上传到 swap/，点「重建索引」纳入书库`);
+    toast(`已上传到 swap/，点「整理入库」纳入书库`);
   } catch (err) {
     toast(err.message, true);
   }
   e.target.value = "";
+});
+
+document.getElementById("btn-organize").addEventListener("click", async () => {
+  toast("正在整理 swap 暂存区…");
+  try {
+    const r = await api("/organize", { method: "POST" });
+    if (r.ok) {
+      toast("整理完成");
+      setTimeout(() => location.reload(), 800);
+    } else {
+      toast("整理失败：" + r.output, true);
+    }
+  } catch (err) {
+    toast(err.message, true);
+  }
 });
 
 document.getElementById("btn-reindex").addEventListener("click", async () => {

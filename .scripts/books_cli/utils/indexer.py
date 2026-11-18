@@ -20,10 +20,13 @@ class Indexer:
     """目录索引器"""
 
     def __init__(self, base_path: str, ignore_patterns: List[str] = None,
-                 file_extensions: List[str] = None):
+                 file_extensions: List[str] = None,
+                 library_dir: str = "library", default_category: str = "99-参考资料"):
         self.base_path = Path(base_path)
         self.ignore_patterns = ignore_patterns or [".scripts", ".metadata", ".git"]
         self.file_extensions = file_extensions or [".pdf", ".epub", ".mobi", ".djvu"]
+        self.library_dir = library_dir
+        self.default_category = default_category
 
     def scan_directory(self) -> List[Path]:
         """扫描目录获取所有书籍文件"""
@@ -87,6 +90,11 @@ class Indexer:
         relative = path.relative_to(self.base_path)
 
         parts = relative.parts
+
+        # 扁平化书库：文件直接放在 library/ 下时，目录名不是真实分类，
+        # 使用默认分类（细分由 organize 或手动编辑完成）
+        if len(parts) == 2 and parts[0] == self.library_dir:
+            return self.default_category
 
         # 处理路径结构 books/分类/books/文件.pdf 或 books/分类/子目录/文件.pdf
         if len(parts) >= 2:
@@ -165,8 +173,18 @@ class Indexer:
             existing = db.get_book_by_filepath(book.filepath)
 
             if existing:
-                # 更新现有记录
+                # 更新现有记录：只刷新文件派生信息，
+                # 保留用户整理的元数据（分类/标签/状态/评分/笔记等）
                 book.id = existing.id
+                book.category = existing.category
+                book.tags = existing.tags
+                book.status = existing.status
+                book.rating = existing.rating
+                book.notes = existing.notes
+                book.isbn = existing.isbn
+                book.metadata_file = existing.metadata_file
+                book.author = existing.author or book.author
+                book.title = existing.title or book.title
                 db.update_book(book)
                 stats["updated"] += 1
             else:
